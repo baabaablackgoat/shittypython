@@ -27,28 +27,19 @@ class Deck(object):
         val = self.cardlist[temp_card % len(self.cardlist)]
         return {"suit": suit, "val": val, "card": suit+val}
 
-#some_deck = Deck()
-#print(some_deck.draw_card())
-
 class Hand(object):
     """A place to store cards that have been drawn."""
-    cards = []
     def __init__(self, owner="none"):
         self.owner = owner
+        self.cards = []
     def add_card(self, deck):
         """draw a card from the specified deck."""
         self.cards.append(deck.draw_card())
-    def rem_card(self, i):
-        """remove/play a card from your hand."""
-        pass
-        #to do
 
-def calc_jack_score(hand):
-    """determines the hands blackjack score"""
+def calc_jack_score(given_hand):
+    """Determines the given hands blackjack score"""
     score, aces, bust = 0, 0, False
-    print(hand.cards)
-    for card in hand.cards:
-        print(card)
+    for card in given_hand.cards:
         if card["val"] in ["J", "Q", "K"]:
             score += 10
         elif card["val"] == "A":
@@ -63,10 +54,52 @@ def calc_jack_score(hand):
         aces -= 1
     if score > 21:
         bust = True
-    return score, bust
+    return {"score":score, "bust":bust}
 
-my_hand = Hand("baa")
-some_deck = Deck()
-for i in range(2):
-    my_hand.add_card(some_deck)
-print(calc_jack_score(my_hand), my_hand)
+def hand_to_string(hand):
+    """Turns the hand object into a string of card values."""
+    output = ""
+    for card in hand.cards:
+        output += card["card"] + " "
+    return output
+
+def jack_dealer(player_score,dealer_hand,deck):
+    """Evaluates the game against a virtual dealer. Requires player score, dealer's deck, and the deck being played."""
+    dealer_score = calc_jack_score(dealer_hand)
+    while dealer_score["score"] < 18: #Dealer draws on 17 and stays on 18.
+        dealer_hand.add_card(deck)
+        dealer_score = calc_jack_score(dealer_hand)
+    if dealer_score["bust"]:
+        print("You win! The dealer went bust with %d (%s)"% (dealer_score["score"],hand_to_string(dealer_hand))) 
+    elif player_score["score"] > dealer_score["score"]:
+        print("You win! You had a score of %d, whilst the dealer only got to %d (%s)." % (player_score["score"],dealer_score["score"],hand_to_string(dealer_hand)))
+    else:
+        print("You have lost. The dealer had a score of %d (%s), being equal or better to your %d." % (dealer_score["score"],hand_to_string(dealer_hand),player_score["score"]))
+
+def play_jack():
+    """the actual game function"""
+    print("Welcome to shitty blackjack.")
+    jack_deck = Deck()
+    player_hand = Hand("player")
+    dealer_hand = Hand("dealer")
+    for _ in range(2): #distribute cards one at a time. Player gets first card.
+        player_hand.add_card(jack_deck)
+        dealer_hand.add_card(jack_deck)
+    player_score = calc_jack_score(player_hand)
+
+    while not player_score["bust"]:
+        print("Your current hand: %s (%d)" % (hand_to_string(player_hand), player_score["score"]))
+        print("The dealer's hole card is a %s." % dealer_hand.cards[0]["card"])
+        user = input("Any input/press enter for another card. 'stop', 'no', or 'n' to stay. \n")
+        if user.lower() in ["stop", "no", "n"]:
+            break
+        player_hand.add_card(jack_deck)
+        player_score = calc_jack_score(player_hand)
+
+    if player_score["bust"]:
+        print("You have lost. You went bust with %s (%d)." % (hand_to_string(player_hand), player_score["score"]))
+    else:
+        print("You have stopped on %d. (%s)" % (player_score["score"], hand_to_string(player_hand)))
+        jack_dealer(player_score,dealer_hand,jack_deck) # Game is handed off to jack_dealer
+
+play_jack()
