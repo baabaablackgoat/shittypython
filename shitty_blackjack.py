@@ -78,7 +78,9 @@ def jack_dealer(player_score,dealer_hand,deck):
 
 def play_jack():
     """the actual game function"""
+    print("_"*20 + "\n")
     print("Welcome to shitty blackjack.")
+    print("_"*20 + "\n")
     jack_deck = Deck()
     player_hand = Hand("player")
     dealer_hand = Hand("dealer")
@@ -89,7 +91,7 @@ def play_jack():
 
     while not player_score["bust"]:
         print("Your current hand: %s (%d)" % (hand_to_string(player_hand), player_score["score"]))
-        print("The dealer's hole card is a %s." % dealer_hand.cards[0]["card"])
+        print("The dealer's hole card is %s." % dealer_hand.cards[0]["card"])
         user = input("Any input/press enter for another card. 'stop', 'no', or 'n' to stay. \n")
         if user.lower() in ["stop", "no", "n"]:
             break
