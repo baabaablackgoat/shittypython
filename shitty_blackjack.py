@@ -88,20 +88,22 @@ def play_jack():
         player_hand.add_card(jack_deck)
         dealer_hand.add_card(jack_deck)
     player_score = calc_jack_score(player_hand)
-
-    while not player_score["bust"]:
-        print("Your current hand: %s (%d)" % (hand_to_string(player_hand), player_score["score"]))
-        print("The dealer's hole card is %s." % dealer_hand.cards[0]["card"])
-        user = input("Any input/press enter for another card. 'stop', 'no', or 'n' to stay. \n")
-        if user.lower() in ["stop", "no", "n"]:
-            break
-        player_hand.add_card(jack_deck)
-        player_score = calc_jack_score(player_hand)
-
-    if player_score["bust"]:
-        print("You have lost. You went bust with %s (%d)." % (hand_to_string(player_hand), player_score["score"]))
+    if player_score["score"] == 21:
+        print("BLACK JACK! You win! (%s) ...How anticlimactic." % hand_to_string(player_hand))
     else:
-        print("You have stopped on %d. (%s)" % (player_score["score"], hand_to_string(player_hand)))
-        jack_dealer(player_score,dealer_hand,jack_deck) # Game is handed off to jack_dealer
+        while not player_score["bust"]:
+            print("Your current hand: %s (%d)" % (hand_to_string(player_hand), player_score["score"]))
+            print("The dealer's hole card is %s." % dealer_hand.cards[0]["card"])
+            user = input("Any input/press enter for another card. 'stop', 'no', or 'n' to stay. \n")
+            if user.lower() in ["stop", "no", "n"]:
+                break
+            player_hand.add_card(jack_deck)
+            player_score = calc_jack_score(player_hand)
+
+        if player_score["bust"]:
+            print("You have lost. You went bust with %s (%d)." % (hand_to_string(player_hand), player_score["score"]))
+        else:
+            print("You have stopped on %d. (%s)" % (player_score["score"], hand_to_string(player_hand)))
+            jack_dealer(player_score,dealer_hand,jack_deck) # Game is handed off to jack_dealer
 
 play_jack()
